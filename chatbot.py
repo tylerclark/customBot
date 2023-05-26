@@ -58,7 +58,11 @@ def main():
         # st.write(query)
 
         if query:
-            docs = VectorStore.similarity_search(query=query, k=3)
+            k = 3  # Number of nearest neighbors to retrieve
+            distances = []  # List to store the distances
+            labels = []
+            docs = VectorStore.similarity_search(
+                query=query, k=k, distances=distances, labels=labels)
 
             llm = OpenAI()
             chain = load_qa_chain(llm=llm, chain_type="stuff")
