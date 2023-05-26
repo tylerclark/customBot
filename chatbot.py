@@ -10,8 +10,20 @@ from langchain.vectorstores import FAISS
 from langchain.llms import OpenAI
 from langchain.chains.question_answering import load_qa_chain
 from langchain.callbacks import get_openai_callback
+from azure.identity import DefaultAzureCredential
+from azure.keyvault.secrets import SecretClient
 
-openai.api_key = st.secrets["OPENAI_API_KEY"]
+# Set up Azure Key Vault client with managed identity
+credential = DefaultAzureCredential()
+key_vault_url = "https://webapp-keys.vault.azure.net/"
+secret_name = "openai-key"
+secret_client = SecretClient(vault_url=key_vault_url, credential=credential)
+
+# Retrieve the secret key
+secret = secret_client.get_secret(secret_name)
+secret_value = secret.value
+
+openai.api_key = secret_value
 
 
 def main():
