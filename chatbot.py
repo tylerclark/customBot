@@ -1,5 +1,6 @@
 import os
 import streamlit as st
+from dotenv import load_dotenv
 import pickle
 from PyPDF2 import PdfReader
 from streamlit_extras.add_vertical_space import add_vertical_space
@@ -11,7 +12,7 @@ from langchain.chains.question_answering import load_qa_chain
 from langchain.callbacks import get_openai_callback
 
 
-os.environ["OPENAI_API_KEY"] = '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'
+load_dotenv()
 
 
 def main():
