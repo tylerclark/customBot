@@ -2,6 +2,7 @@ import os
 import streamlit as st
 import openai
 import pickle
+import config
 from PyPDF2 import PdfReader
 from streamlit_extras.add_vertical_space import add_vertical_space
 from langchain.text_splitter import RecursiveCharacterTextSplitter
@@ -13,17 +14,8 @@ from langchain.callbacks import get_openai_callback
 from azure.identity import DefaultAzureCredential
 from azure.keyvault.secrets import SecretClient
 
-# Set up Azure Key Vault client with managed identity
-credential = DefaultAzureCredential()
-key_vault_url = "https://webapp-keys.vault.azure.net/"
-secret_name = "openai-key"
-secret_client = SecretClient(vault_url=key_vault_url, credential=credential)
 
-# Retrieve the secret key
-secret = secret_client.get_secret(secret_name)
-secret_value = secret.value
-
-openai.api_key = secret_value
+openai.api_key = config.OPENAI_API_KEY
 
 
 def main():
