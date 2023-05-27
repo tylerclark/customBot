@@ -33,7 +33,7 @@ jobs:
             - name: execute py script
               env:
                   OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-              run: python chatbot.py
+              run: streamlit run chatbot.py
 
             # Optional: Add step to run tests here (PyTest, Django test suites, etc.)
 
