@@ -11,27 +11,28 @@ from langchain.vectorstores import FAISS
 from langchain.llms import OpenAI
 from langchain.chains.question_answering import load_qa_chain
 from langchain.callbacks import get_openai_callback
-from azure.identity import ClientSecretCredential, DefaultAzureCredential
-from azure.keyvault.secrets import SecretClient
 
-KEY_VAULT_NAME = "webappkeys"
-CLIENT_ID = os.environ["CLIENT_ID"]
-TENANT_ID = os.environ["TENANT_ID"]
-CLIENT_SECRET = os.environ["CLIENT_SECRET"]
+# from azure.identity import ClientSecretCredential, DefaultAzureCredential
+# from azure.keyvault.secrets import SecretClient
 
-KeyVault_URI = f"https://{KEY_VAULT_NAME}.vault.azure.net/"
+# KEY_VAULT_NAME = "webappkeys"
+# CLIENT_ID = os.environ.get("")
+# TENANT_ID = os.environ["TENANT_ID"]
+# CLIENT_SECRET = os.environ["CLIENT_SECRET"]
 
-# _credential = DefaultAzureCredential()
+# KeyVault_URI = f"https://{KEY_VAULT_NAME}.vault.azure.net/"
 
-_credential = ClientSecretCredential(
-    tenant_id=TENANT_ID,
-    client_id=CLIENT_ID,
-    client_secret=CLIENT_SECRET
-)
-_sc = SecretClient(vault_url=KeyVault_URI, credential=_credential)
-OPENAI_API_KEY = _sc.get_secret("openai-api-key").value
+# # _credential = DefaultAzureCredential()
 
-openai.api_key = OPENAI_API_KEY
+# _credential = ClientSecretCredential(
+#     tenant_id=TENANT_ID,
+#     client_id=CLIENT_ID,
+#     client_secret=CLIENT_SECRET
+# )
+# _sc = SecretClient(vault_url=KeyVault_URI, credential=_credential)
+# OPENAI_API_KEY = _sc.get_secret("openai-api-key").value
+
+openai.api_key = os.environ["OPENAI_API_KEY"]
 
 
 def main():
