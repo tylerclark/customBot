@@ -33,7 +33,7 @@ from langchain.callbacks import get_openai_callback
 # OPENAI_API_KEY = _sc.get_secret("openai-api-key").value
 
 OPENAI_API_KEY = os.environ["OPENAI_API_KEY"]
-openai.api_key = {OPENAI_API_KEY}
+openai.api_key = OPENAI_API_KEY
 
 
 def main():
