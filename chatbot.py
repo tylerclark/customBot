@@ -1,10 +1,12 @@
 import os
 import streamlit as st
 import openai
+import pandas
 import pickle
 # import config
 from PyPDF2 import PdfReader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain.document_loaders.csv_loader import CSVLoader
 from langchain.embeddings.openai import OpenAIEmbeddings
 from langchain.vectorstores import FAISS
 from langchain.llms import OpenAI
@@ -32,21 +34,27 @@ from langchain.callbacks import get_openai_callback
 # OPENAI_API_KEY = _sc.get_secret("openai-api-key").value
 
 OPENAI_API_KEY = os.environ.get('OPENAI_API_KEY')
-# openai.api_key = OPENAI_API_KEY
+openai.api_key = OPENAI_API_KEY
+# st.write(OPENAI_API_KEY)
 
 
 def main():
-    st.header("Chat with PDF 💬")
+    st.header("Chat with your Documents 💬")
 
     # upload a PDF file
-    pdf = st.file_uploader("Upload your PDF", type='pdf')
+    file = st.file_uploader("Upload your PDF/CSV file.",
+                            type=['pdf', '.csv', '.xslx'])
 
-    if pdf is not None:
-        pdf_reader = PdfReader(pdf)
-
+    if file is not None:
+        extension = file.name[len(file.name)-3:]
         text = ""
-        for page in pdf_reader.pages:
-            text += page.extract_text()
+        if(extension == "pdf"):
+            file_reader = PdfReader(file)
+            for page in file_reader.pages:
+                text += page.extract_text()
+        elif(extension == "csv"):
+            file_reader = pandas.read_csv(file)
+            text = file_reader.to_string(index=False)
 
         text_splitter = RecursiveCharacterTextSplitter(
             chunk_size=1000,
@@ -56,7 +64,7 @@ def main():
         chunks = text_splitter.split_text(text=text)
 
         # # embeddings
-        store_name = pdf.name[:-4]
+        store_name = file.name[:-4]
         st.success("Successfully uploaded: "f'{store_name}')
 
         # if os.path.exists(f"{store_name}.pkl"):
@@ -68,7 +76,7 @@ def main():
         #     with open(f"{store_name}.pkl", "wb") as f:
         #         pickle.dump(VectorStore, f)
 
-        embeddings = OpenAIEmbeddings(openai_api_key=OPENAI_API_KEY)
+        embeddings = OpenAIEmbeddings()
         VectorStore = FAISS.from_texts(chunks, embedding=embeddings)
 
         # Accept user questions/query
@@ -81,7 +89,7 @@ def main():
             docs = VectorStore.similarity_search(
                 query=query, k=k, distances=distances, labels=labels)
 
-            llm = OpenAI()
+            llm = OpenAI(model_name="gpt-3.5-turbo")
             chain = load_qa_chain(llm=llm, chain_type="stuff")
             with get_openai_callback() as cb:
                 response = chain.run(input_documents=docs, question=query)
