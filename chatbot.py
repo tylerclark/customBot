@@ -2,16 +2,15 @@ import os
 import streamlit as st
 import openai
 import pandas
+import docx
 import pickle
-# import config
 from PyPDF2 import PdfReader
+from langchain.llms import OpenAI
 from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain.document_loaders.csv_loader import CSVLoader
 from langchain.embeddings.openai import OpenAIEmbeddings
 from langchain.vectorstores import FAISS
-from langchain.llms import OpenAI
-from langchain.chains.question_answering import load_qa_chain
 from langchain.callbacks import get_openai_callback
+from langchain.chains.question_answering import load_qa_chain
 
 # from azure.identity import ClientSecretCredential, DefaultAzureCredential
 # from azure.keyvault.secrets import SecretClient
@@ -43,7 +42,7 @@ def main():
 
     # upload a PDF file
     file = st.file_uploader("Upload your PDF/CSV file.",
-                            type=['pdf', '.csv', '.xslx'])
+                            type=['pdf', '.csv', '.xlsx', '.xls', '.docx'])
 
     if file is not None:
         extension = file.name[len(file.name)-3:]
@@ -55,6 +54,13 @@ def main():
         elif(extension == "csv"):
             file_reader = pandas.read_csv(file)
             text = file_reader.to_string(index=False)
+        elif(extension == "lsx" or extension == "xls"):
+            file_reader = pandas.read_excel(file)
+            text = file_reader.to_string(index=False)
+        elif(extension == "ocx"):
+            file_reader = docx.Document(file)
+            list = [paragraph.text for paragraph in file_reader.paragraphs]
+            text = ' '.join(list)
 
         text_splitter = RecursiveCharacterTextSplitter(
             chunk_size=1000,
