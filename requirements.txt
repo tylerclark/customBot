@@ -7,3 +7,5 @@ streamlit-extras
 altair<5
 openai==0.27.6
 tiktoken
+azure-identity==1.13.0
+azure-keyvault-secrets==4.7.0
