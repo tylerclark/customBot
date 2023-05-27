@@ -4,7 +4,6 @@ import openai
 import pickle
 # import config
 from PyPDF2 import PdfReader
-from streamlit_extras.add_vertical_space import add_vertical_space
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.embeddings.openai import OpenAIEmbeddings
 from langchain.vectorstores import FAISS
@@ -33,7 +32,7 @@ from langchain.callbacks import get_openai_callback
 # OPENAI_API_KEY = _sc.get_secret("openai-api-key").value
 
 OPENAI_API_KEY = os.environ.get('OPENAI_API_KEY')
-openai.api_key = OPENAI_API_KEY
+# openai.api_key = OPENAI_API_KEY
 
 
 def main():
@@ -69,7 +68,7 @@ def main():
         #     with open(f"{store_name}.pkl", "wb") as f:
         #         pickle.dump(VectorStore, f)
 
-        embeddings = OpenAIEmbeddings()
+        embeddings = OpenAIEmbeddings(openai_api_key=OPENAI_API_KEY)
         VectorStore = FAISS.from_texts(chunks, embedding=embeddings)
 
         # Accept user questions/query
