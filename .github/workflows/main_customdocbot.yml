@@ -31,12 +31,12 @@ jobs:
               run: pip install -r requirements.txt
 
             # Optional: Add step to run tests here (PyTest, Django test suites, etc.)
-            -name: Run tests
-            env:
+            - name: Run tests
+              env:
                   CLIENT_ID: ${{ secrets.CLIENT_ID }}
                   TENANT_ID: ${{ secrets.TENANT_ID }}
                   CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
-            run: |
+              run: |
                   nbdev_test_nbs
 
             - name: Upload artifact for deployment jobs
