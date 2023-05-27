@@ -32,7 +32,7 @@ from langchain.callbacks import get_openai_callback
 # _sc = SecretClient(vault_url=KeyVault_URI, credential=_credential)
 # OPENAI_API_KEY = _sc.get_secret("openai-api-key").value
 
-OPENAI_API_KEY = os.environ["OPENAI_API_KEY"]
+OPENAI_API_KEY = os.environ.get('OPENAI_API_KEY')
 openai.api_key = OPENAI_API_KEY
 
 
