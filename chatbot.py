@@ -14,7 +14,7 @@ from langchain.callbacks import get_openai_callback
 from azure.identity import ClientSecretCredential, DefaultAzureCredential
 from azure.keyvault.secrets import SecretClient
 
-KEY_VAULT_NAME = "WebAppKeys"
+KEY_VAULT_NAME = "webappkeys"
 CLIENT_ID = os.environ["CLIENT_ID"]
 TENANT_ID = os.environ["TENANT_ID"]
 CLIENT_SECRET = os.environ["CLIENT_SECRET"]
