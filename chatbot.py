@@ -63,8 +63,8 @@ def main():
             text = ' '.join(list)
 
         text_splitter = RecursiveCharacterTextSplitter(
-            chunk_size=1000,
-            chunk_overlap=200,
+            chunk_size=500,
+            chunk_overlap=20,
             length_function=len
         )
         chunks = text_splitter.split_text(text=text)
@@ -95,7 +95,7 @@ def main():
             docs = VectorStore.similarity_search(
                 query=query, k=k, distances=distances, labels=labels)
 
-            llm = OpenAI(model_name="gpt-3.5-turbo")
+            llm = OpenAI(temperature=0.07, model_name="gpt-3.5-turbo")
             chain = load_qa_chain(llm=llm, chain_type="stuff")
             with get_openai_callback() as cb:
                 response = chain.run(input_documents=docs, question=query)
