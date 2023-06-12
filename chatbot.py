@@ -1,67 +1,51 @@
 import os
 import streamlit as st
-import openai
 import pandas
 import docx
-import pickle
 from PyPDF2 import PdfReader
 from langchain.llms import OpenAI
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.embeddings.openai import OpenAIEmbeddings
 from langchain.vectorstores import FAISS
+from langchain.document_loaders.csv_loader import CSVLoader
 from langchain.callbacks import get_openai_callback
 from langchain.chains.question_answering import load_qa_chain
-
-# from azure.identity import ClientSecretCredential, DefaultAzureCredential
-# from azure.keyvault.secrets import SecretClient
-
-# KEY_VAULT_NAME = "webappkeys"
-# CLIENT_ID = os.environ.get("")
-# TENANT_ID = os.environ["TENANT_ID"]
-# CLIENT_SECRET = os.environ["CLIENT_SECRET"]
-
-# KeyVault_URI = f"https://{KEY_VAULT_NAME}.vault.azure.net/"
-
-# # _credential = DefaultAzureCredential()
-
-# _credential = ClientSecretCredential(
-#     tenant_id=TENANT_ID,
-#     client_id=CLIENT_ID,
-#     client_secret=CLIENT_SECRET
-# )
-# _sc = SecretClient(vault_url=KeyVault_URI, credential=_credential)
-# OPENAI_API_KEY = _sc.get_secret("openai-api-key").value
-
-OPENAI_API_KEY = os.environ.get('OPENAI_API_KEY')
-openai.api_key = OPENAI_API_KEY
-# st.write(OPENAI_API_KEY)
 
 
 def main():
     st.header("Chat with your Documents 💬")
 
-    # upload a PDF file
-    file = st.file_uploader("Upload your PDF/CSV file.",
-                            type=['pdf', '.csv', '.xlsx', '.xls', '.docx'])
+    openaikey = st.text_input("Your Open API key: ")
+    os.environ["OPENAI_API_KEY"] = openaikey
 
-    if file is not None:
+    # upload a PDF file
+    uploadedFiles = st.file_uploader("Upload your PDF/CSV file.",
+                                     type=['pdf', '.csv', '.xlsx', '.xls', '.docx'], accept_multiple_files=True)
+
+    # st.write(uploadedFiles)
+
+    text = ""
+    for file in uploadedFiles:
         extension = file.name[len(file.name)-3:]
-        text = ""
         if(extension == "pdf"):
             file_reader = PdfReader(file)
             for page in file_reader.pages:
                 text += page.extract_text()
         elif(extension == "csv"):
             file_reader = pandas.read_csv(file)
-            text = file_reader.to_string(index=False)
+            text += "\n".join(
+                file_reader.apply(lambda row: ', '.join(row.values.astype(str)), axis=1))
         elif(extension == "lsx" or extension == "xls"):
             file_reader = pandas.read_excel(file)
-            text = file_reader.to_string(index=False)
+            text += "\n".join(
+                file_reader.apply(lambda row: ', '.join(row.values.astype(str)), axis=1))
         elif(extension == "ocx"):
             file_reader = docx.Document(file)
             list = [paragraph.text for paragraph in file_reader.paragraphs]
-            text = ' '.join(list)
+            text += ' '.join(list)
 
+    # st.write(text)
+    if(len(text) != 0):
         text_splitter = RecursiveCharacterTextSplitter(
             chunk_size=500,
             chunk_overlap=20,
@@ -70,26 +54,16 @@ def main():
         chunks = text_splitter.split_text(text=text)
 
         # # embeddings
-        store_name = file.name[:-4]
-        st.success("Successfully uploaded: "f'{store_name}')
-
-        # if os.path.exists(f"{store_name}.pkl"):
-        #     with open(f"{store_name}.pkl", "rb") as f:
-        #         VectorStore = pickle.load(f)
-        # else:
-        #     embeddings = OpenAIEmbeddings()
-        #     VectorStore = FAISS.from_texts(chunks, embedding=embeddings)
-        #     with open(f"{store_name}.pkl", "wb") as f:
-        #         pickle.dump(VectorStore, f)
+        st.success("Successfully uploaded files")
 
         embeddings = OpenAIEmbeddings()
         VectorStore = FAISS.from_texts(chunks, embedding=embeddings)
 
         # Accept user questions/query
-        query = st.text_input("Ask questions about your PDF file:")
+        query = st.text_input("Ask questions about your file:")
 
         if query:
-            k = 3  # Number of nearest neighbors to retrieve
+            k = 10  # Number of nearest neighbors to retrieve
             distances = []  # List to store the distances
             labels = []
             docs = VectorStore.similarity_search(
