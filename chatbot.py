@@ -11,6 +11,25 @@ from langchain.document_loaders.csv_loader import CSVLoader
 from langchain.callbacks import get_openai_callback
 from langchain.chains.question_answering import load_qa_chain
 
+# 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
+with st.sidebar:
+    uploadedFiles = st.file_uploader("Upload your files.",
+                                     type=['pdf', '.csv', '.xlsx', '.xls', '.docx'], accept_multiple_files=True)
+    with st.expander("Don't have an OpenAI key?"):
+        st.write("To get an OpenAI key do the following:")
+        st.markdown("- Go to *openai.com* and Log in with your account.")
+        st.markdown(
+            "- You'll get three options to choose from, choose *API* section.")
+        st.markdown(
+            "- You'll be redirected to *OpenAI Platform*")
+        st.markdown(
+            "- Here on the top-right corner, tap on your profile and choose *Manage Account* ")
+        st.markdown(
+            "- In the *API Keys* section, you can create a new secret key, that'll be your API key")
+
+        st.markdown(
+            ">Note that, if your free usage limit has expired, you will need to buy OpenAI credits")
+
 
 def main():
     st.header("Chat with your Documents 💬")
@@ -19,10 +38,6 @@ def main():
     os.environ["OPENAI_API_KEY"] = openaikey
 
     # upload a PDF file
-    uploadedFiles = st.file_uploader("Upload your PDF/CSV file.",
-                                     type=['pdf', '.csv', '.xlsx', '.xls', '.docx'], accept_multiple_files=True)
-
-    # st.write(uploadedFiles)
 
     text = ""
     for file in uploadedFiles:
@@ -76,6 +91,7 @@ def main():
                 print(cb)
             st.divider()
             st.subheader("Answer: ")
+
             st.write(response)
             st.divider()
 
