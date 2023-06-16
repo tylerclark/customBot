@@ -11,8 +11,9 @@ from langchain.document_loaders.csv_loader import CSVLoader
 from langchain.callbacks import get_openai_callback
 from langchain.chains.question_answering import load_qa_chain
 
-# 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
+
 with st.sidebar:
+    st.title("DocBot")
     uploadedFiles = st.file_uploader("Upload your files.",
                                      type=['pdf', '.csv', '.xlsx', '.xls', '.docx'], accept_multiple_files=True)
     with st.expander("Don't have an OpenAI key?"):
@@ -27,14 +28,14 @@ with st.sidebar:
         st.markdown(
             "- In the *API Keys* section, you can create a new secret key, that'll be your API key")
 
-        st.markdown(
-            ">Note that, if your free usage limit has expired, you will need to buy OpenAI credits")
+        st.info(
+            "Note that, if your free usage limit has expired, you will need to buy OpenAI credits", icon="🚨")
 
 
 def main():
-    st.header("Chat with your Documents 💬")
+    st.title("Chat with your Documents 💬")
 
-    openaikey = st.text_input("Your Open API key: ")
+    openaikey = st.text_input("Your OpenAI API key: ", type="password")
     os.environ["OPENAI_API_KEY"] = openaikey
 
     # upload a PDF file
