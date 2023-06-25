@@ -3,7 +3,7 @@ import streamlit as st
 import pandas
 import docx
 from PyPDF2 import PdfReader
-from langchain.llms import OpenAI
+from langchain.chat_models import ChatOpenAI
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.embeddings.openai import OpenAIEmbeddings
 from langchain.vectorstores import FAISS
@@ -85,11 +85,9 @@ def main():
             docs = VectorStore.similarity_search(
                 query=query, k=k, distances=distances, labels=labels)
 
-            llm = OpenAI(temperature=0.07, model_name="gpt-3.5-turbo")
+            llm = ChatOpenAI(temperature=0.07, model_name="gpt-3.5-turbo")
             chain = load_qa_chain(llm=llm, chain_type="stuff")
-            with get_openai_callback() as cb:
-                response = chain.run(input_documents=docs, question=query)
-                print(cb)
+            response = chain.run(input_documents=docs, question=query)
             st.divider()
             st.subheader("Answer: ")
 
