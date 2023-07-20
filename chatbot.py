@@ -13,9 +13,6 @@ from langchain.chains.question_answering import load_qa_chain
 
 
 with st.sidebar:
-    st.title("DocBot")
-    uploadedFiles = st.file_uploader("Upload your files.",
-                                     type=['pdf', '.csv', '.xlsx', '.xls', '.docx'], accept_multiple_files=True)
     with st.expander("Don't have an OpenAI key?"):
         st.write("To get an OpenAI key do the following:")
         st.markdown("- Go to *openai.com* and Log in with your account.")
@@ -33,7 +30,9 @@ with st.sidebar:
 
 
 def main():
-    st.title("Chat with your Documents 💬")
+    st.title("DocBot - Chat with your Documents 💬")
+    uploadedFiles = st.file_uploader("Upload your files.",
+                                     type=['pdf', '.csv', '.xlsx', '.xls', '.docx'], accept_multiple_files=True)
 
     openaikey = st.text_input("Your OpenAI API key: ", type="password")
     os.environ["OPENAI_API_KEY"] = openaikey
