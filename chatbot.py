@@ -30,12 +30,11 @@ with st.sidebar:
 
 
 def main():
-    st.title("DocBot - Chat with your Documents 💬")
-    uploadedFiles = st.file_uploader("Upload your files.",
-                                     type=['pdf', '.csv', '.xlsx', '.xls', '.docx'], accept_multiple_files=True)
-
+    st.title("DocBot - Chat with your Documents💬")
     openaikey = st.text_input("Your OpenAI API key: ", type="password")
     os.environ["OPENAI_API_KEY"] = openaikey
+    uploadedFiles = st.file_uploader("Upload your files.",
+                                     type=['pdf', '.csv', '.xlsx', '.xls', '.docx'], accept_multiple_files=True)
 
     # upload a PDF file
 
