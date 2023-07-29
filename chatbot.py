@@ -13,7 +13,7 @@ from langchain.chains.question_answering import load_qa_chain
 
 
 with st.sidebar:
-    with st.expander("Don't have an OpenAI key?"):
+    with st.expander("⚠️ Don't have an OpenAI key?", expanded=True):
         st.write("To get an OpenAI key do the following:")
         st.markdown("- Go to *openai.com* and Log in with your account.")
         st.markdown(
@@ -30,11 +30,16 @@ with st.sidebar:
 
 
 def main():
-    st.title("DocBot - Chat with your Documents💬")
+    st.title("DocBot - Chat with your Files🦜")
+    openaikey = None
     openaikey = st.text_input("Your OpenAI API key: ", type="password")
     os.environ["OPENAI_API_KEY"] = openaikey
+    if(openaikey == None or openaikey == ""):
+        visible = True
+    else:
+        visible = False
     uploadedFiles = st.file_uploader("Upload your files.",
-                                     type=['pdf', '.csv', '.xlsx', '.xls', '.docx'], accept_multiple_files=True)
+                                     type=['pdf', '.csv', '.xlsx', '.xls', '.docx'], accept_multiple_files=True, disabled=visible)
 
     # upload a PDF file
 
@@ -58,20 +63,24 @@ def main():
             list = [paragraph.text for paragraph in file_reader.paragraphs]
             text += ' '.join(list)
 
-    # st.write(text)
-    if(len(text) != 0):
-        text_splitter = RecursiveCharacterTextSplitter(
-            chunk_size=500,
-            chunk_overlap=20,
-            length_function=len
-        )
-        chunks = text_splitter.split_text(text=text)
-
-        # # embeddings
+    if(uploadedFiles and text):
         st.success("Successfully uploaded files")
 
-        embeddings = OpenAIEmbeddings()
-        VectorStore = FAISS.from_texts(chunks, embedding=embeddings)
+    # st.write(text)
+
+    if(len(text) != 0):
+        with st.spinner('Creating chunks...'):
+            text_splitter = RecursiveCharacterTextSplitter(
+                chunk_size=500,
+                chunk_overlap=20,
+                length_function=len
+            )
+            chunks = text_splitter.split_text(text=text)
+
+        # # embeddings
+
+            embeddings = OpenAIEmbeddings()
+            VectorStore = FAISS.from_texts(chunks, embedding=embeddings)
 
         # Accept user questions/query
         query = st.text_input("Ask questions about your file:")
