@@ -1,3 +1,6 @@
+# DocBot - Talk with your Documents!! 🦜
+![1694155695695](https://github.com/SujalSamai/customBot/assets/87236576/55626e4c-2933-49ff-b1b2-b87666bf5721)
+
 # A Document based ChatBot
 - This project is focussed on those people who have huge amount of Files which are not easy to read quickly.
 - You can just upload your documents (Supported formats - .pdf, .xslx, .csv, .docx) and enter your OPENAI API key
